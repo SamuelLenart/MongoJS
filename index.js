@@ -8,6 +8,11 @@ const databaseCollection = 'tasks'
 const app = express()
 const MongoClient = mongodb.MongoClient
 
+app.use(express.urlencoded({
+    extended: true
+})
+)
+
 app.get('',(req,res)=> {
     res.send('Hello World')
 })
@@ -34,10 +39,6 @@ app.get('/task', (req, res)=>{
                 filter={done:false}
         }else if(req.query.priority){
             filter.priority=parseInt(req.query.priority);
-            /*if(req.query.priority=='true')
-                filter = {priority:true};
-            else
-                filter={priority:false}*/
         }
         const db = client.db(databaseName);
 
@@ -47,9 +48,21 @@ app.get('/task', (req, res)=>{
             res.send(result);
         })
         
-    })
+    })  
 })
-
+app.post('/task/new',(req,res)=> {
+    const data = req.body;
+    const name = data.name;
+    const priority = data.priority;
+    let price = 'undefined';
+    if(data.price){
+        price=data.price;
+    }
+    console.log(name,' ',priority,' ',price);
+    const done = false;
+    var today = new LocalDate();
+    
+});  
 app.listen(3000, ()=>{
     console.log('Server port is 3000')
 })
