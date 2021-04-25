@@ -51,18 +51,23 @@ app.get('/task', (req, res)=>{
     })  
 })
 app.post('/task/new',(req,res)=> {
-    const data = req.body;
-    const name = data.name;
-    const priority = data.priority;
-    let price = 'undefined';
-    if(data.price){
+    const data= req.body;
+    const name=data.name;
+    const priority=data.priority;
+    let price;
+    if (data.price) {
         price=data.price;
     }
-    console.log(name,' ',priority,' ',price);
-    const done = false;
-    var today = new LocalDate();
-    
-});  
+    var newTask = {name: name, priority: priority, price: price, done: 'false', date: currentDate};
+        const db=client.db(databaseName);
+        db.collection("tasks").insertOne(newTask, function(err, res) {
+            if(err){
+                return console.log('Unable to add new task');
+            } else{
+                console.log("Task inserted");
+            } 
+        })
+    })
 app.listen(3000, ()=>{
     console.log('Server port is 3000')
 })
