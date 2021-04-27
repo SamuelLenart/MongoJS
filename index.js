@@ -68,6 +68,30 @@ app.post('/task/new',(req,res)=> {
             } 
         })
     })
+
+app.put('/task/done',(req,res)=>{
+    const _id = req.query._id
+    if(!_id){
+        res.status(400).send({"error":"missing _id parameter"})
+    }
+    const filter={}
+    filter._id=new mongodb.ObjectID(_id);
+    const change = {};
+    change.done=true;
+    MongoClient.connect(connectionURL, (error,client)=> {
+        if(error){
+            res.status(400).send({"error":"Unable to save data to database"})
+            return console.log('Unable to connect to database!')
+        }
+        const db = client.db(databaseName)
+        db.collection('tasks').updateOne(filter, {$set: {done: true}}),(err,result)=>{
+            if(error){
+                res.status(400).send({"error":"Unable to change"})
+            }
+            res.status(200).send({"result":"Task has been changed"})
+        }
+    })
+    })
 app.listen(3000, ()=>{
     console.log('Server port is 3000')
 })
