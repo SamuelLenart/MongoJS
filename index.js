@@ -8,6 +8,14 @@ const databaseCollection = 'tasks'
 const app = express()
 const MongoClient = mongodb.MongoClient
 
+app.use(
+    express.urlencoded({
+        extended: true
+    })
+);
+
+app.use(express.json());
+
 app.use(express.urlencoded({
     extended: true
 })
@@ -26,34 +34,42 @@ app.get('/author',(req,res)=> {
 })
 
 app.get('/task', (req, res)=>{
-    MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client)=>{
+    MongoClient.connect(URL,(error, client)=>{
         if(error){
-            return console.log('Unable to connect to database!')
-        }
-        console.log('Connection successed')
-        let filter={};
-        if(req.query.done){
-            if(req.query.done=='true')
-                filter = {done:true};
-            else
-                filter={done:false}
-        }else if(req.query.priority){
-            filter.priority=parseInt(req.query.priority);
-        }
+            return console.log('Unable to connect to TaskDB');
+        }else{
+            let filter='{}';
+            if (req.query.done=='true') {
+                filter={done:true};
+            }else 
+                if(req.query.done=='false'){
+                filter={done:true}; 
+            }else 
+                if(req.query.priority=='1'){
+                filter={priority:1};
+            }else
+                if (req.query.priority=='2'){
+                filter={priority:2}; 
+            }else
+                if (req.query.priority=='3'){
+                filter={priority:3}; 
+            }else
+            res.send('wrong priority')
         const db = client.db(databaseName);
 
-        db.collection('tasks').find().toArray((err, result)=> {
-            if (err) throw err;
-            console.log(result);
+        const result = db.collection('tasks').find().toArray((error,result)=>{
+            if (error) throw error;
+            console.log(result);    
             res.send(result);
         })
-        
-    })  
+    }
+    })
 })
 app.post('/task/new',(req,res)=> {
     const data= req.body;
     const name=data.name;
     const priority=data.priority;
+    const currentDate = new Date();
     let price;
     if (data.price) {
         price=data.price;
@@ -92,7 +108,7 @@ app.put('/task/done',(req,res)=>{
         }
     })
     })
-    app.patch('/updatetask', (req, res) => {
+    app.patch('/task/update', (req, res) => {
         MongoClient.connect(connection, (error, client) => {
             if(error) return console.log("Invalid connection")
             const db = client.db(database)
