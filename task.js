@@ -1,4 +1,17 @@
 //$(document).ready(()=>{});
+function complete(element){
+    console.log(element.value);
+    $.ajax({
+        url: "http://localhost:3000/task/done?_id="+element.value,
+        type: "put",
+        statusCode: {
+            200: (result)=>{
+                console.log("Task has been done");
+                localtion.reload();
+            }
+        }
+    })
+}
 
 $(()=>{
     console.log("Your page is ready")
@@ -15,18 +28,18 @@ $(()=>{
                     const date = result[index].date;
                     const done = result[index].done;
                     const price = result[index].price;
-                    var text = name+" ("+date+") \n";
-                    text = text + "Priority: "+priority;
-                    if(result[index].price)
-                        text=text + " Price: "+price;
-
-                    text= text+ " \nDone: "+done;
+                    let text = "<b>" + name + "</b>" + " (" + date + ") <br>";
+                    text = text +  "<b> Priority </b>: " + priority;
+                    if(price >= 0){
+                        text = text + "<b> Price: </b>" + price+"€";
+                    }
+                    text = text + "<b> Done: </b>" + done;
+                    if(done==false)
+                    text = text+" <A> href=(Completed task)<A>";
                     console.log(text);
-                    var newElement = $("<div></div>").text(text);
-                    var elementBR=$("<br/>");
-                    $("#parrent").append(newElement, elementBR);    
-            }
-        },
+                    $("#mainContainer").append("<div>" +"<div class='center'>" + text + "</div>" + "</div> <br>");
+                }
+            },
        400: (err)=>{ console.log('Bad request, ')},
        400: (err)=>{console.log('Not found !')}
         },

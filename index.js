@@ -34,7 +34,7 @@ app.get('/author',(req,res)=> {
 })
 
 app.get('/task', (req, res)=>{
-    MongoClient.connect(URL,(error, client)=>{
+    MongoClient.connect(URL, {useNewUrlParser: true}, (error, client)=>{
         if(error){
             return console.log('Unable to connect to TaskDB');
         }else{

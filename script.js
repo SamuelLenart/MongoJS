@@ -22,4 +22,5 @@ btn.addEventListener("click", ()=>{
             console.log("Error: ",err);
         }
     })
+    alert("Task has been added");
 })
